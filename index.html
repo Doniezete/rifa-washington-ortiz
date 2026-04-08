@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rifa – Sorte que Faz a Diferença</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --rosa:#e91e8c;--roxo:#7b1fa2;--verde:#00c853;--dourado:#ffd600;
+      --azul:#00b0ff;--bg:#fdf0f8;--card:#fff;--texto:#2c2c2c;
+      --texto2:#777;--borda:#f0d6eb;--radius:12px;
+    }
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--texto);min-height:100vh;padding-bottom:3rem;}
+
+    .header{background:linear-gradient(135deg,#e91e8c,#7b1fa2,#00b0ff,#00c853);background-size:300% 300%;animation:ga 7s ease infinite;padding:2rem 1rem 1.4rem;text-align:center;border-radius:0 0 32px 32px;margin-bottom:1.4rem;box-shadow:0 4px 20px rgba(233,30,140,.3);}
+    @keyframes ga{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .htit{font-family:'Baloo 2',cursive;font-size:clamp(17px,4.5vw,24px);font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3);letter-spacing:.5px;line-height:1.3;}
+    .hsub{font-size:12px;color:rgba(255,255,255,.88);margin-top:4px;font-weight:600;}
+    .premio-box{background:rgba(255,255,255,.18);border-radius:14px;margin:10px auto 8px;padding:9px 16px;max-width:340px;}
+    .premio-tit{font-size:11px;color:rgba(255,255,255,.85);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+    .premio-item{font-size:13px;color:#fff;line-height:1.8;font-weight:600;}
+    .preco-box{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+    .pp{background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;}
+    .pp.dest{background:var(--dourado);color:#5d3a00;box-shadow:0 2px 8px rgba(255,214,0,.4);}
+    .sync-b{display:inline-block;background:rgba(255,255,255,.18);color:rgba(255,255,255,.9);font-size:10px;padding:2px 10px;border-radius:20px;margin-top:8px;}
+
+    .container{max-width:760px;margin:0 auto;padding:0 1rem;}
+    .loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:3rem 1rem;color:var(--texto2);font-size:15px;}
+    .spinner{width:24px;height:24px;border:3px solid var(--borda);border-top-color:var(--rosa);border-radius:50%;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
+    @media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr);}}
+    .stat{background:var(--card);border:1px solid var(--borda);border-radius:var(--radius);padding:10px 6px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+    .sn{font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;line-height:1;}
+    .sl{font-size:10px;color:var(--texto2);margin-top:2px;}
+    .sd .sn{color:#00c853;}.sr .sn{color:#ff9800;}.sv .sn{color:var(--rosa);}.sm .sn{color:var(--dourado);}
+    .sm{background:linear-gradient(135deg,#1a1a2e,#16213e)!important;border:none!important;}
+    .sm .sl{color:#aaa!important;}
+
+    .legenda{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+    .leg{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--texto2);}
+    .ldot{width:14px;height:14px;border-radius:4px;}
+    .ll{background:#fff;border:1.5px solid var(--borda);}.ls{background:var(--azul);}.lr{background:#ff9800;}.lv{background:var(--rosa);}
+
+    .grade{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:1.4rem;}
+    @media(max-width:420px){.grade{grid-template-columns:repeat(8,1fr);gap:3px;}}
+    .num{aspect-ratio:1;border-radius:7px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--borda);background:#fff;color:#aaa;transition:transform .12s,box-shadow .12s;user-select:none;}
+    .num:hover:not(.res):not(.vend){transform:scale(1.18);box-shadow:0 4px 12px rgba(233,30,140,.25);z-index:2;position:relative;color:var(--rosa);border-color:var(--rosa);}
+    .num.sel{background:var(--azul);color:#fff;border-color:#0091ea;transform:scale(1.12);position:relative;z-index:2;box-shadow:0 4px 10px rgba(0,176,255,.4);}
+    .num.res{background:#ff9800;color:#fff;border-color:#e65100;cursor:default;}
+    .num.vend{background:var(--rosa);color:#fff;border-color:#ad1457;cursor:default;text-decoration:line-through;opacity:.75;}
+
+    .painel{background:var(--card);border:1px solid var(--borda);border-radius:18px;padding:1.2rem 1.4rem;box-shadow:0 4px 20px rgba(0,0,0,.06);margin-bottom:1.2rem;}
+    .pt{font-family:'Baloo 2',cursive;font-size:17px;font-weight:800;color:var(--rosa);margin-bottom:8px;}
+    .pi{font-size:12px;color:var(--texto2);background:#fdf0f8;border:1px solid var(--borda);padding:8px 12px;border-radius:10px;margin-bottom:12px;}
+    .pi strong{color:var(--rosa);}
+    .sel-lista{display:flex;flex-wrap:wrap;gap:6px;min-height:38px;padding:9px;background:#fdf0f8;border:1px dashed var(--borda);border-radius:10px;margin-bottom:8px;align-items:center;}
+    .badge{background:var(--azul);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;transition:opacity .15s;}
+    .badge:hover{opacity:.7;}
+    .ph{font-size:12px;color:#ccc;}
+    .tl{text-align:right;font-size:13px;font-weight:700;color:var(--rosa);margin-bottom:12px;min-height:20px;}
+    .campo{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+    .campo label{font-size:12px;font-weight:700;color:var(--texto2);}
+    .campo input{font-family:'Nunito',sans-serif;font-size:14px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--borda);background:#fdf0f8;color:var(--texto);width:100%;transition:border-color .15s;}
+    .campo input:focus{outline:none;border-color:var(--rosa);}
+
+    .btn-res-wrap{margin-bottom:14px;}
+    .btn-res{width:100%;padding:16px;background:linear-gradient(90deg,#e91e8c,#7b1fa2,#00b0ff);background-size:200% auto;color:#fff;font-family:'Baloo 2',cursive;font-size:19px;font-weight:800;border:none;border-radius:14px;cursor:pointer;box-shadow:0 6px 20px rgba(233,30,140,.45);transition:all .3s;animation:btnPulse 2.5s ease infinite;letter-spacing:.5px;}
+    @keyframes btnPulse{0%,100%{box-shadow:0 6px 20px rgba(233,30,140,.45)}50%{box-shadow:0 6px 28px rgba(123,31,162,.65)}}
+    .btn-res:not(:disabled):hover{background-position:right center;transform:scale(1.02);}
+    .btn-res:disabled{opacity:.35;cursor:default;animation:none;box-shadow:none;}
+    .btn-res-sub{text-align:center;font-size:12px;font-weight:700;color:var(--rosa);margin-top:6px;min-height:18px;}
+
+    .pix-box{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:12px 16px;margin-bottom:12px;}
+    .pix-t{font-size:11px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+    .pix-c{font-size:14px;color:var(--dourado);font-weight:700;font-family:monospace;word-break:break-all;}
+    .pix-n{font-size:11px;color:#ccc;margin-top:3px;}
+    .btn-pc{margin-top:8px;font-size:11px;padding:4px 14px;background:rgba(255,214,0,.15);color:var(--dourado);border:1px solid rgba(255,214,0,.35);border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;transition:background .15s;}
+    .btn-pc:hover{background:rgba(255,214,0,.28);}
+
+    .erro{background:#fff0f6;color:var(--rosa);border:1px solid #f8bbd0;border-radius:10px;padding:9px 13px;font-size:12px;margin-bottom:10px;display:none;}
+    .aviso{font-size:11px;color:var(--texto2);margin-top:8px;text-align:center;line-height:1.6;}
+
+    .tog{text-align:center;margin-bottom:1rem;}
+    .btn-adm{font-size:12px;padding:6px 18px;background:transparent;color:var(--texto2);border:1px solid var(--borda);border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .15s;}
+    .btn-adm:hover{background:#fdf0f8;}
+    .adm{display:none;background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:1.2rem;margin-bottom:1rem;box-shadow:0 4px 14px rgba(0,0,0,.05);}
+    .adm.ativo{display:block;}
+
+    .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+    .tb{font-size:12px;padding:6px 14px;background:var(--bg);border:1px solid var(--borda);border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;color:var(--texto2);transition:all .15s;}
+    .tb.ativo{background:var(--rosa);color:#fff;border-color:var(--rosa);}
+    .tc{display:none;}.tc.ativo{display:block;}
+    .at{font-weight:700;font-size:13px;color:var(--texto);margin-bottom:10px;}
+    .ae{margin-bottom:10px;padding:10px 12px;background:#fdf0f8;border-radius:10px;border:1px solid var(--borda);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .ai{line-height:1.7;color:var(--texto);font-size:13px;flex:1;}
+    .an{color:var(--rosa);font-weight:700;}
+    .btn-cf{font-size:12px;padding:5px 13px;background:var(--verde);color:#fff;border:none;border-radius:20px;cursor:pointer;font-weight:700;white-space:nowrap;font-family:'Nunito',sans-serif;}
+    .btn-cf:hover{opacity:.85;}
+    .av{color:var(--texto2);font-size:13px;text-align:center;padding:10px 0;}
+
+    .tcard{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px 18px;margin-bottom:14px;}
+    .tcl{font-size:11px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+    .tcv{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--dourado);}
+    .tcd{font-size:11px;color:#888;margin-top:3px;}
+    .ci{margin-bottom:8px;padding:10px 12px;background:#fdf0f8;border-radius:10px;border:1px solid var(--borda);font-size:13px;}
+    .cn{font-weight:700;color:var(--texto);margin-bottom:3px;}
+    .cnu{color:var(--rosa);font-weight:700;}
+    .cm{font-size:12px;color:var(--texto2);margin-top:2px;}
+
+    .sbox{text-align:center;padding:1rem 0;}
+    .btn-sort{padding:13px 30px;background:linear-gradient(90deg,var(--dourado),#ff9800);color:#fff;font-family:'Baloo 2',cursive;font-size:17px;font-weight:800;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 14px rgba(255,214,0,.4);transition:opacity .15s,transform .1s;margin-bottom:1rem;}
+    .btn-sort:hover{opacity:.9;transform:scale(.98);}
+    .res-sort{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:1.5rem;text-align:center;margin-top:1rem;}
+    .snum{font-family:'Baloo 2',cursive;font-size:64px;font-weight:800;color:var(--dourado);line-height:1;}
+    .snome{font-size:18px;font-weight:700;color:#fff;margin-top:8px;}
+    .sfone{font-size:13px;color:#ccc;margin-top:4px;}
+    .sav{font-size:12px;color:#aaa;margin-top:8px;}
+    .btn-ns{margin-top:14px;padding:9px 22px;background:rgba(255,214,0,.15);color:var(--dourado);border:1px solid rgba(255,214,0,.35);border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;}
+
+    .mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+    .mover.ativo{display:flex;}
+    .modal{background:#fff;border-radius:22px;padding:1.6rem 1.4rem;max-width:390px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:popIn .25s ease;}
+    @keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+    .mh{text-align:center;margin-bottom:1rem;}
+    .me{font-size:44px;display:block;margin-bottom:6px;}
+    .mt{font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;color:var(--rosa);}
+    .cbox{background:#fdf0f8;border:1px dashed var(--borda);border-radius:12px;padding:1rem;margin-bottom:1rem;font-size:12px;line-height:2;color:var(--texto);white-space:pre-wrap;font-family:monospace;user-select:all;cursor:text;}
+    .btn-cop{width:100%;padding:11px;background:var(--verde);color:#fff;font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;transition:opacity .15s;}
+    .btn-cop:hover{opacity:.85;}
+    .btn-fech{width:100%;padding:9px;background:transparent;color:var(--texto2);font-size:13px;border:1px solid var(--borda);border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
+    .msenha{background:#fff;border-radius:22px;padding:1.6rem 1.4rem;max-width:300px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:popIn .25s ease;}
+    .stit{font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--rosa);margin-bottom:14px;}
+    .sinp{font-family:'Nunito',sans-serif;font-size:20px;padding:10px;border-radius:12px;border:1.5px solid var(--borda);background:#fdf0f8;color:var(--texto);width:100%;text-align:center;letter-spacing:6px;margin-bottom:12px;}
+    .sinp:focus{outline:none;border-color:var(--rosa);}
+    .btn-ent{width:100%;padding:11px;background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;}
+    .serr{color:var(--rosa);font-size:12px;margin-bottom:10px;display:none;font-weight:600;}
+    footer{text-align:center;font-size:11px;color:#bbb;margin-top:2rem;}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="htit">🌸 Sorte que Faz a Diferença 🌸<br><span style="font-size:.8em;font-weight:600">E.E. Washington Ortiz</span></div>
+  <div class="hsub">Participe e concorra a um prêmio especial!</div>
+  <div class="premio-box">
+    <div class="premio-tit">🏆 Prêmio</div>
+    <div class="premio-item">💄 Kit Autocuidado<br>✨ Avon + Natura</div>
+  </div>
+  <div class="preco-box">
+    <div class="pp">1 número = R$ 4,00</div>
+    <div class="pp dest">✨ 3 números = R$ 10,00</div>
+  </div>
+  <div class="sync-b">🔄 Sincronizado entre dispositivos</div>
+</div>
+
+<div class="container">
+  <div id="loading" class="loading"><div class="spinner"></div><span>Carregando números...</span></div>
+
+  <div id="cont" style="display:none">
+    <div class="stats">
+      <div class="stat sd"><div class="sn" id="cd">—</div><div class="sl">Disponíveis</div></div>
+      <div class="stat sr"><div class="sn" id="cr">—</div><div class="sl">Reservados</div></div>
+      <div class="stat sv"><div class="sn" id="cv">—</div><div class="sl">Confirmados</div></div>
+      <div class="stat sm"><div class="sn" id="cm">R$ 0</div><div class="sl">Arrecadado</div></div>
+    </div>
+
+    <div class="legenda">
+      <div class="leg"><div class="ldot ll"></div>Disponível</div>
+      <div class="leg"><div class="ldot ls"></div>Selecionado</div>
+      <div class="leg"><div class="ldot lr"></div>Reservado</div>
+      <div class="leg"><div class="ldot lv"></div>Vendido</div>
+    </div>
+    <div class="grade" id="grade"></div>
+
+    <div class="painel">
+      <div class="pt">🛒 Sua seleção</div>
+      <div class="pi">💡 <strong>Promoção:</strong> Escolha 3 números e pague apenas R$ 10,00 (em vez de R$ 12,00)!</div>
+      <div class="sel-lista" id="sl"><span class="ph">Clique nos números para selecionar</span></div>
+      <div class="tl" id="tl"></div>
+      <div class="campo"><label>Seu nome completo</label><input type="text" id="inp-nome" placeholder="Ex: Maria Silva" maxlength="60"/></div>
+      <div class="campo"><label>Seu WhatsApp</label><input type="tel" id="inp-fone" placeholder="Ex: (19) 99999-0000" maxlength="20"/></div>
+      <div class="erro" id="erro"></div>
+      <div class="btn-res-wrap">
+        <button class="btn-res" id="btn-r" disabled onclick="reservar()">🎟️ Reservar meus números!</button>
+        <div class="btn-res-sub" id="btn-sub"></div>
+      </div>
+      <div class="pix-box">
+        <div class="pix-t">💳 Após reservar, pague via PIX</div>
+        <div class="pix-c">19 982766286</div>
+        <div class="pix-n">Carmen</div>
+        <button class="btn-pc" onclick="copiarPix()">📋 Copiar chave PIX</button>
+      </div>
+      <div class="aviso">Envie o comprovante do PIX para confirmar sua(s) cota(s).</div>
+    </div>
+
+    <div class="tog"><button class="btn-adm" onclick="abrirSenha()">🔐 Painel do organizador</button></div>
+    <div class="adm" id="adm">
+      <div class="tabs">
+        <button class="tb ativo" onclick="tab('tp',this)">⏳ Pendentes</button>
+        <button class="tb" onclick="tab('tc',this)">👥 Compradores</button>
+        <button class="tb" onclick="tab('ts',this)">🎲 Sorteio</button>
+      </div>
+      <div class="tc ativo" id="tp">
+        <div class="at">Reservas pendentes — confirmar após receber pagamento</div>
+        <div id="al"></div>
+      </div>
+      <div class="tc" id="tc">
+        <div id="tcb"></div>
+        <div class="at">Números confirmados por comprador</div>
+        <div id="lc"></div>
+      </div>
+      <div class="tc" id="ts">
+        <div class="at">Sorteio — apenas números confirmados participam</div>
+        <div class="sbox">
+          <button class="btn-sort" onclick="sortear()">🎲 Sortear agora!</button>
+          <div id="rs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>🌸 Sorte que Faz a Diferença – E.E. Washington Ortiz &nbsp;|&nbsp; Feito com carinho 💄</footer>
+
+<div class="mover" id="mcomp">
+  <div class="modal">
+    <div class="mh"><span class="me">🎟️</span><div class="mt">Reserva feita!</div></div>
+    <div class="cbox" id="ctxt"></div>
+    <button class="btn-cop" onclick="copiarComp()">📋 Copiar comprovante</button>
+    <button class="btn-fech" onclick="fecharComp()">Fechar</button>
+  </div>
+</div>
+<div class="mover" id="msenha">
+  <div class="msenha">
+    <span class="me">🔐</span>
+    <div class="stit">Área do Organizador</div>
+    <div class="serr" id="serr">Senha incorreta. Tente novamente.</div>
+    <input type="password" class="sinp" id="sinp" placeholder="••••" maxlength="10" onkeydown="if(event.key==='Enter')checkSenha()"/>
+    <button class="btn-ent" onclick="checkSenha()">Entrar</button>
+    <button class="btn-fech" onclick="fecharSenha()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+const TOTAL=300, SENHA='1107', PIX='19 982766286';
+const FB='https://casa-facil-4aef8-default-rtdb.firebaseio.com';
+const DB_PATH='/rifa_washington';
+let nums={}, res=[], sel=[], si=null;
+
+function preco(q){
+  const grupos=Math.floor(q/3), resto=q%3;
+  return grupos*10+resto*4;
+}
+
+async function fbGet(p){const r=await fetch(FB+p+'.json');if(!r.ok)throw new Error();return r.json();}
+async function fbSet(p,d){await fetch(FB+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}
+async function fbPatch(p,d){await fetch(FB+p+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}
+
+async function load(){
+  const d=await fbGet(DB_PATH);
+  nums=(d&&d.numeros)?d.numeros:{};
+  const rawRes=(d&&d.reservas)?Object.values(d.reservas):[];
+  res=rawRes.map(r=>({...r,numeros:r.numeros?(Array.isArray(r.numeros)?r.numeros:Object.values(r.numeros)).map(Number):[]}));
+}
+
+function st(n){return nums[n]||nums[String(n)]||'livre';}
+
+function renderGrade(){
+  const g=document.getElementById('grade');g.innerHTML='';
+  let disp=0,rv=0,vd=0,arq=0;
+  for(let i=1;i<=TOTAL;i++){
+    const s=st(i),isSel=sel.includes(i);
+    if(s==='livre')disp++;if(s==='reservado')rv++;if(s==='vendido')vd++;
+    const el=document.createElement('div');
+    let cls='num';
+    if(isSel)cls+=' sel';else if(s==='reservado')cls+=' res';else if(s==='vendido')cls+=' vend';
+    el.className=cls;el.textContent=i;
+    if(s==='livre')el.onclick=()=>toggle(i);
+    g.appendChild(el);
+  }
+  res.forEach(r=>{if(!r.numeros)return;const nv=r.numeros.filter(n=>st(n)==='vendido');if(nv.length)arq+=preco(nv.length);});
+  document.getElementById('cd').textContent=disp-sel.length;
+  document.getElementById('cr').textContent=rv+sel.length;
+  document.getElementById('cv').textContent=vd;
+  document.getElementById('cm').textContent='R$ '+arq;
+}
+
+function renderSel(){
+  const lista=document.getElementById('sl');lista.innerHTML='';
+  if(sel.length===0){lista.innerHTML='<span class="ph">Clique nos números para selecionar</span>';document.getElementById('tl').textContent='';}
+  else{
+    sel.sort((a,b)=>a-b).forEach(n=>{const b=document.createElement('span');b.className='badge';b.textContent=n;b.onclick=()=>toggle(n);lista.appendChild(b);});
+    const t=preco(sel.length),q=sel.length;
+    let desc='';if(q>=3){const g=Math.floor(q/3);desc=` (${g}x promoção${q%3>0?' + '+q%3+' avulso(s)':''})`;}
+    document.getElementById('tl').textContent=`Total: R$ ${t},00${desc}`;
+  }
+  const sub=document.getElementById('btn-sub');
+  if(sel.length===0){sub.textContent='';}
+  else{const t=preco(sel.length),q=sel.length;let msg=`${q} número(s) selecionado(s) · R$ ${t},00`;if(q>=3){const g=Math.floor(q/3);msg+=` 🎉 (${g}x promoção!)`;}sub.textContent=msg;}
+  document.getElementById('btn-r').disabled=sel.length===0;
+}
+
+function toggle(n){
+  if(st(n)!=='livre')return;
+  const i=sel.indexOf(n);if(i===-1)sel.push(n);else sel.splice(i,1);
+  renderGrade();renderSel();
+}
+
+function erro(m){const e=document.getElementById('erro');e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',5000);}
+
+async function reservar(){
+  const nome=document.getElementById('inp-nome').value.trim();
+  const fone=document.getElementById('inp-fone').value.trim();
+  if(!nome){erro('Por favor, informe seu nome.');return;}
+  if(!sel.length)return;
+  const btn=document.getElementById('btn-r');btn.disabled=true;btn.textContent='Aguarde...';
+  try{
+    await load();
+    const ocup=sel.filter(n=>st(n)!=='livre');
+    if(ocup.length){erro('Os números '+ocup.join(', ')+' foram reservados agora. Escolha outros!');sel=sel.filter(n=>!ocup.includes(n));renderGrade();renderSel();btn.disabled=false;btn.textContent='🎟️ Reservar meus números!';return;}
+    const agora=new Date().toLocaleString('pt-BR'),id=Date.now();
+    const ns=[...sel].sort((a,b)=>a-b),total=preco(ns.length);
+    const upd={};ns.forEach(n=>{upd[n]='reservado';});
+    await fbPatch(DB_PATH+'/numeros',upd);
+    const rv={id,nome,fone,numeros:ns,total,data:agora};
+    await fbSet(DB_PATH+'/reservas/'+id,rv);
+    nums={...nums,...upd};res.push(rv);
+    document.getElementById('ctxt').textContent=comp(rv);
+    document.getElementById('mcomp').classList.add('ativo');
+    sel=[];document.getElementById('inp-nome').value='';document.getElementById('inp-fone').value='';
+    renderGrade();renderSel();
+    if(document.getElementById('adm').classList.contains('ativo')){rAdm();rComp();}
+  }catch(e){erro('Erro de conexão. Verifique sua internet e tente novamente.');}
+  btn.disabled=false;btn.textContent='🎟️ Reservar meus números!';
+}
+
+function comp(r){
+  return['🌸 SORTE QUE FAZ A DIFERENÇA','E.E. Washington Ortiz',
+    '─────────────────────────',
+    '👤 Nome: '+r.nome,'📱 WhatsApp: '+(r.fone||'—'),
+    '🎯 Números: '+r.numeros.join(', '),'💰 Total: R$ '+r.total+',00',
+    '📅 Data: '+r.data,'─────────────────────────',
+    '💳 PIX: '+PIX,'   Carmen',
+    '─────────────────────────',
+    '✅ Envie este comprovante',
+    '+ comprovante do PIX para','confirmar sua reserva.',
+    '─────────────────────────',
+    '🏆 Prêmio: Kit Autocuidado',
+    '💄 Avon + Natura',
+    '─────────────────────────',
+    '🌸 Boa sorte!'
+  ].join('\n');
+}
+
+function copiarComp(){navigator.clipboard.writeText(document.getElementById('ctxt').textContent).then(()=>{const b=document.querySelector('.btn-cop');b.textContent='✅ Copiado!';setTimeout(()=>b.textContent='📋 Copiar comprovante',2500);}).catch(()=>alert('Selecione o texto e copie manualmente.'));}
+function fecharComp(){document.getElementById('mcomp').classList.remove('ativo');}
+function copiarPix(){navigator.clipboard.writeText(PIX).then(()=>{const b=document.querySelector('.btn-pc');b.textContent='✅ Copiado!';setTimeout(()=>b.textContent='📋 Copiar chave PIX',2500);}).catch(()=>alert('Copie manualmente: '+PIX));}
+
+function tab(id,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('ativo'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('ativo'));
+  document.getElementById(id).classList.add('ativo');btn.classList.add('ativo');
+  if(id==='tc')rComp();if(id==='ts')document.getElementById('rs').innerHTML='';
+}
+
+function abrirSenha(){document.getElementById('sinp').value='';document.getElementById('serr').style.display='none';document.getElementById('msenha').classList.add('ativo');setTimeout(()=>document.getElementById('sinp').focus(),100);}
+function fecharSenha(){document.getElementById('msenha').classList.remove('ativo');}
+function checkSenha(){
+  if(document.getElementById('sinp').value===SENHA){
+    fecharSenha();document.getElementById('adm').classList.add('ativo');
+    load().then(()=>{rAdm();rComp();});
+  }else{document.getElementById('serr').style.display='block';document.getElementById('sinp').value='';document.getElementById('sinp').focus();}
+}
+
+function rAdm(){
+  const lista=document.getElementById('al');
+  const pend=res.filter(r=>r.numeros&&r.numeros.some(n=>st(n)==='reservado'));
+  if(!pend.length){lista.innerHTML='<div class="av">Nenhuma reserva pendente.</div>';return;}
+  lista.innerHTML='';
+  pend.forEach(r=>{
+    const div=document.createElement('div');div.className='ae';
+    div.innerHTML=`<div class="ai"><strong>${r.nome}</strong>${r.fone?' · 📱 '+r.fone:''}<br><span class="an">Nº ${r.numeros.join(', ')}</span><br><span style="color:var(--rosa);font-weight:700">R$ ${r.total},00</span> <span style="color:var(--texto2);font-size:11px">${r.data}</span></div><button class="btn-cf" onclick="confirmar(${r.id})">✔ Confirmar</button>`;
+    lista.appendChild(div);
+  });
+}
+
+function rComp(){
+  const lista=document.getElementById('lc'),box=document.getElementById('tcb');
+  const conf=res.filter(r=>r.numeros&&r.numeros.some(n=>st(n)==='vendido'));
+  let total=0;conf.forEach(r=>{const nv=r.numeros.filter(n=>st(n)==='vendido');total+=preco(nv.length);});
+  const qtdVend=Object.values(nums).filter(v=>v==='vendido').length;
+  box.innerHTML=`<div class="tcard"><div class="tcl">💰 Total arrecadado (confirmados)</div><div class="tcv">R$ ${total},00</div><div class="tcd">${conf.length} comprador(es) · ${qtdVend} número(s) confirmado(s)</div></div>`;
+  if(!conf.length){lista.innerHTML='<div class="av">Nenhum número confirmado ainda.</div>';return;}
+  lista.innerHTML='';
+  conf.forEach(r=>{
+    const nv=r.numeros.filter(n=>st(n)==='vendido');if(!nv.length)return;
+    const div=document.createElement('div');div.className='ci';
+    div.innerHTML=`<div class="cn">👤 ${r.nome}${r.fone?' · 📱 '+r.fone:''}</div><div class="cnu">Nº ${nv.join(', ')}</div><div class="cm">R$ ${preco(nv.length)},00 · ${r.data}</div>`;
+    lista.appendChild(div);
+  });
+}
+
+async function confirmar(id){
+  try{
+    await load();const r=res.find(x=>x.id===id);if(!r)return;
+    const upd={};r.numeros.forEach(n=>{upd[n]='vendido';nums[n]='vendido';});
+    await fbPatch(DB_PATH+'/numeros',upd);
+    renderGrade();rAdm();rComp();
+  }catch(e){alert('Erro ao confirmar. Verifique sua conexão.');}
+}
+
+function sortear(){
+  const vend=[];for(let i=1;i<=TOTAL;i++){if(st(i)==='vendido')vend.push(i);}
+  if(!vend.length){document.getElementById('rs').innerHTML='<div class="av">Nenhum número confirmado para sortear ainda.</div>';return;}
+  const el=document.getElementById('rs');let c=0;
+  const iv=setInterval(()=>{
+    el.innerHTML=`<div style="font-family:'Baloo 2',cursive;font-size:56px;font-weight:800;color:var(--rosa);text-align:center;padding:1rem 0">${String(vend[Math.floor(Math.random()*vend.length)]).padStart(3,'0')}</div>`;
+    c++;
+    if(c>=30){
+      clearInterval(iv);
+      const s=vend[Math.floor(Math.random()*vend.length)];
+      const ganhador=res.find(r=>r.numeros&&r.numeros.includes(s)&&st(s)==='vendido');
+      el.innerHTML=`<div class="res-sort"><div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">🎉 Número sorteado</div><div class="snum">${String(s).padStart(3,'0')}</div><div class="snome">🏆 ${ganhador?ganhador.nome:'—'}</div>${ganhador&&ganhador.fone?'<div class="sfone">📱 '+ganhador.fone+'</div>':''}<div class="sav">Parabéns ao ganhador! 🌸</div><button class="btn-ns" onclick="sortear()">🎲 Sortear novamente</button></div>`;
+    }
+  },80);
+}
+
+async function sync(){try{await load();renderGrade();if(document.getElementById('adm').classList.contains('ativo')){rAdm();rComp();}}catch{}}
+
+async function init(){
+  try{
+    await load();
+    document.getElementById('loading').style.display='none';
+    document.getElementById('cont').style.display='block';
+    renderGrade();renderSel();
+    if(si)clearInterval(si);si=setInterval(sync,15000);
+  }catch{document.getElementById('loading').innerHTML='<span style="color:var(--rosa)">⚠️ Erro ao conectar. Recarregue a página.</span>';}
+}
+init();
+</script>
+</body>
+</html>
