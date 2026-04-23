@@ -100,6 +100,9 @@
     .ai{line-height:1.7;color:var(--texto);font-size:13px;flex:1;}
     .an{color:var(--rosa);font-weight:700;}
     .btn-cf{font-size:12px;padding:5px 13px;background:var(--verde);color:#fff;border:none;border-radius:20px;cursor:pointer;font-weight:700;white-space:nowrap;font-family:'Nunito',sans-serif;}
+    .btn-can{font-size:12px;padding:5px 13px;background:#fff;color:#e53935;border:1px solid #e53935;border-radius:20px;cursor:pointer;font-weight:700;white-space:nowrap;font-family:'Nunito',sans-serif;margin-top:4px;}
+    .btn-can:hover{background:#fff0f0;}
+    .ae-btns{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
     .btn-cf:hover{opacity:.85;}
     .av{color:var(--texto2);font-size:13px;text-align:center;padding:10px 0;}
 
@@ -378,12 +381,12 @@ function checkSenha(){
 
 function rAdm(){
   const lista=document.getElementById('al');
-  const pend=res.filter(r=>r.numeros&&r.numeros.some(n=>st(n)==='reservado'));
+  const pend=res.filter(r=>!r.cancelado&&r.numeros&&r.numeros.some(n=>st(n)==='reservado'));
   if(!pend.length){lista.innerHTML='<div class="av">Nenhuma reserva pendente.</div>';return;}
   lista.innerHTML='';
   pend.forEach(r=>{
     const div=document.createElement('div');div.className='ae';
-    div.innerHTML=`<div class="ai"><strong>${r.nome}</strong>${r.fone?' · 📱 '+r.fone:''}<br><span class="an">Nº ${r.numeros.join(', ')}</span><br><span style="color:var(--rosa);font-weight:700">R$ ${r.total},00</span> <span style="color:var(--texto2);font-size:11px">${r.data}</span></div><button class="btn-cf" onclick="confirmar(${r.id})">✔ Confirmar</button>`;
+    div.innerHTML=`<div class="ai"><strong>${r.nome}</strong>${r.fone?' · 📱 '+r.fone:''}<br><span class="an">Nº ${r.numeros.join(', ')}</span><br><span style="color:var(--rosa);font-weight:700">R$ ${r.total},00</span> <span style="color:var(--texto2);font-size:11px">${r.data}</span></div><div class="ae-btns"><button class="btn-cf" onclick="confirmar(${r.id})">✔ Confirmar</button><button class="btn-can" onclick="cancelar(${r.id})">✖ Cancelar reserva</button></div>`;
     lista.appendChild(div);
   });
 }
