@@ -416,6 +416,27 @@ async function confirmar(id){
   }catch(e){alert('Erro ao confirmar. Verifique sua conexão.');}
 }
 
+async function cancelar(id){
+  if(!confirm('Cancelar esta reserva? Os números voltam a ficar disponíveis, mas o histórico é mantido.'))return;
+  try{
+    await load();
+    const r=res.find(x=>x.id===id);
+    if(!r)return;
+    const upd={};
+    r.numeros.forEach(n=>{
+      if(st(n)==='reservado'){upd[String(n)]=null;}
+    });
+    if(Object.keys(upd).length){
+      await fbPatch(DB_PATH+'/numeros',upd);
+      Object.keys(upd).forEach(n=>{delete nums[n];delete nums[Number(n)];});
+    }
+    await fbPatch(DB_PATH+'/reservas/'+id,{cancelado:true});
+    r.cancelado=true;
+    renderGrade();rAdm();rComp();
+    alert('Reserva cancelada! Os números voltaram a ficar disponíveis.');
+  }catch(e){alert('Erro ao cancelar. Verifique sua conexão.');}
+}
+
 function sortear(){
   const vend=[];for(let i=1;i<=TOTAL;i++){if(st(i)==='vendido')vend.push(i);}
   if(!vend.length){document.getElementById('rs').innerHTML='<div class="av">Nenhum número confirmado para sortear ainda.</div>';return;}
@@ -447,4 +468,3 @@ init();
 </script>
 </body>
 </html>
- 
